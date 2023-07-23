@@ -87,7 +87,7 @@ widgetHandler = {
   globals = {}, -- global vars/funcs
 
   mouseOwner = nil,
-  ownedButton = 0,
+  ownedButton = nil,
 
   tweakMode = false,
   tweakKeys = {},
@@ -1510,11 +1510,13 @@ function widgetHandler:MousePress(x, y, button)
   if (not self.tweakMode) then
     if (mo) then
       mo:MousePress(x, y, button)
+      self.ownedButton = button
       return true  --  already have an active press
     end
     for _,w in ipairs(self.MousePressList) do
       if (w:MousePress(x, y, button)) then
         if (not mo) then
+          self.ownedButton = button
           self.mouseOwner = w
         end
         return true
@@ -1524,11 +1526,13 @@ function widgetHandler:MousePress(x, y, button)
   else
     if (mo) then
       mo:TweakMousePress(x, y, button)
+      self.ownedButton = button
       return true  --  already have an active press
     end
     for _,w in ipairs(self.TweakMousePressList) do
       if (w:TweakMousePress(x, y, button)) then
         self.mouseOwner = w
+        self.ownedButton = button
         return true
       end
     end
@@ -1539,6 +1543,9 @@ end
 
 function widgetHandler:MouseMove(x, y, dx, dy, button)
   local mo = self.mouseOwner
+  if button ~= self.ownedButton then 
+    return 
+  end
   if (not self.tweakMode) then
     if (mo and mo.MouseMove) then
       return mo:MouseMove(x, y, dx, dy, button)

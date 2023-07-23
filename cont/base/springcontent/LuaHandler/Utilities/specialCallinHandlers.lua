@@ -192,12 +192,14 @@ function hHookFuncs.MousePress(x, y, button)
 	local mo = handler.mouseOwner
 	if (mo and mo.MousePress__) then
 		SafeCallAddon(mo, "MousePress__", x, y, button)
+		handler.ownedButton = button
 		return true  --// already have an active press
 	end
 
 	for it,f in hCallInLists.MousePress:iter() do
 		if f(x, y, button) then
 			handler.mouseOwner = it.owner
+			handler.ownedButton = button
 			return true
 		end
 	end
@@ -209,7 +211,7 @@ function hHookFuncs.MouseMove(x, y, dx, dy, button)
 	--FIXME send this event to all widgets (perhaps via a new callin PassiveMouseMove?)
 
 	local mo = handler.mouseOwner
-	if (mo) then
+	if (mo and handler.ownedButton == button) then
 		return SafeCallAddon(mo, "MouseMove__", x, y, dx, dy, button)
 	end
 end

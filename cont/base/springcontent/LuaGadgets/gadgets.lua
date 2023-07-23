@@ -81,6 +81,7 @@ gadgetHandler = {
 
   actionHandler = actionHandler,
   mouseOwner = nil,
+  ownedButton = nil
 }
 
 
@@ -2046,10 +2047,12 @@ function gadgetHandler:MousePress(x, y, button)
   local mo = self.mouseOwner
   if (mo) then
     mo:MousePress(x, y, button)
+    self.ownedButton = button
     return true  --  already have an active press
   end
   for _,g in r_ipairs(self.MousePressList) do
     if (g:MousePress(x, y, button)) then
+      self.ownedButton = button
       self.mouseOwner = g
       return true
     end
@@ -2060,7 +2063,7 @@ end
 
 function gadgetHandler:MouseMove(x, y, dx, dy, button)
   local mo = self.mouseOwner
-  if (mo and mo.MouseMove) then
+  if (self.ownedButton == button and mo and mo.MouseMove) then
     return mo:MouseMove(x, y, dx, dy, button)
   end
 end

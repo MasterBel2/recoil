@@ -111,6 +111,7 @@ handler = {
 	callInHookFuncs = {};
 
 	mouseOwner  = nil;
+	ownedButton = nil;
 	initialized = false;
 }
 
